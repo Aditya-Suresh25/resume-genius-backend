@@ -9,3 +9,7 @@ python-dotenv
 requests
 httpx
 email-validator
+pydantic-settings
+pytest
+pytest-asyncio
+pytest-cov
