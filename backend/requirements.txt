@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+google-genai
+weasyprint
+pydantic
+jinja2
+python-multipart
+python-dotenv
+requests
+httpx

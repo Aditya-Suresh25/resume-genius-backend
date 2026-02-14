@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ r.personal_info.full_name }} - Resume</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.3;
+            color: #333;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            font-size: 10pt;
+            margin-top: 3px;
+        }
+
+        .section {
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 6px;
+            padding-bottom: 2px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .job-sub {
+            display: flex;
+            justify-content: space-between;
+            font-style: italic;
+            margin-bottom: 2px;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>{{ r.personal_info.full_name }}</h1>
+        <div class="contact-info">
+            {% if r.personal_info.email %}{{ r.personal_info.email }}{% endif %}
+            {% if r.personal_info.phone %} | {{ r.personal_info.phone }}{% endif %}
+            {% if r.personal_info.linkedin %} | {{ r.personal_info.linkedin }}{% endif %}
+            {% if r.personal_info.github %} | {{ r.personal_info.github }}{% endif %}
+            {% if r.personal_info.portfolio %} | {{ r.personal_info.portfolio }}{% endif %}
+        </div>
+    </div>
+
+    {% if r.summary %}
+    <div class="section">
+        <div class="section-title">Professional Summary</div>
+        <p>{{ r.summary }}</p>
+    </div>
+    {% endif %}
+
+    {% if r.skills %}
+    <div class="section">
+        <div class="section-title">Skills</div>
+        <ul style="list-style-type: none; padding-left: 0;">
+            {% for skill_group in r.skills %}
+            <li style="margin-bottom: 2px;"><strong>{{ skill_group.split(':')[0] }}:</strong> {{
+                skill_group.split(':')[1] }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if r.highlights %}
+    <div class="section">
+        <div class="section-title">Highlights</div>
+        <ul>
+            {% for highlight in r.highlights %}
+            <li>{{ highlight }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if r.is_student %}
+    {# STUDENT MODE: Education First, then Experience #}
+
+    {% if r.education %}
+    <div class="section">
+        <div class="section-title">Education</div>
+        {% for edu in r.education %}
+        <div style="margin-bottom: 4px;">
+            <div class="job-header">
+                <span>{{ edu.institution }}</span>
+                <span>{{ edu.duration }}</span>
+            </div>
+            <div>{{ edu.degree }} {% if edu.gpa %}| GPA: {{ edu.gpa }}{% endif %}</div>
+
+            {% if edu.honors %}
+            <div style="font-style: italic; font-size: 10pt; margin-top: 2px;">
+                Honors: {{ edu.honors | join(', ') }}
+            </div>
+            {% endif %}
+
+            {% if r.is_student and edu.coursework %}
+            <div style="font-size: 10pt; margin-top: 2px;">
+                <strong>Coursework:</strong> {{ edu.coursework | join(', ') }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if r.experience %}
+    <div class="section">
+        <div class="section-title">Experience</div>
+        {% for job in r.experience %}
+        <div style="margin-bottom: 6px;">
+            <div class="job-header">
+                <span>{{ job.company }}</span>
+                <span>{{ job.duration }}</span>
+            </div>
+            <div class="job-sub">
+                <span>{{ job.role }}</span>
+                <span>{{ job.location }}</span>
+            </div>
+            <ul>
+                {% for bull in job.bullets %}
+                <li>{{ bull }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    {# PROFESSIONAL MODE: Experience First, then Education #}
+
+    {% if r.experience %}
+    <div class="section">
+        <div class="section-title">Experience</div>
+        {% for job in r.experience %}
+        <div style="margin-bottom: 6px;">
+            <div class="job-header">
+                <span>{{ job.company }}</span>
+                <span>{{ job.duration }}</span>
+            </div>
+            <div class="job-sub">
+                <span>{{ job.role }}</span>
+                <span>{{ job.location }}</span>
+            </div>
+            <ul>
+                {% for bull in job.bullets %}
+                <li>{{ bull }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if r.education %}
+    <div class="section">
+        <div class="section-title">Education</div>
+        {% for edu in r.education %}
+        <div style="margin-bottom: 4px;">
+            <div class="job-header">
+                <span>{{ edu.institution }}</span>
+                <span>{{ edu.duration }}</span>
+            </div>
+            <div>{{ edu.degree }} {% if edu.gpa %}| GPA: {{ edu.gpa }}{% endif %}</div>
+
+            {% if edu.honors %}
+            <div style="font-style: italic; font-size: 10pt; margin-top: 2px;">
+                Honors: {{ edu.honors | join(', ') }}
+            </div>
+            {% endif %}
+
+            {% if r.is_student and edu.coursework %}
+            <div style="font-size: 10pt; margin-top: 2px;">
+                <strong>Coursework:</strong> {{ edu.coursework | join(', ') }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+    {% if r.projects %}
+    <div class="section">
+        <div class="section-title">Projects</div>
+        {% for proj in r.projects %}
+        <div style="margin-bottom: 6px;">
+            <div class="job-header">
+                <span>{{ proj.name }}</span>
+                <span>{% if proj.link %}{{ proj.link }}{% endif %}</span>
+            </div>
+            <p style="margin: 2px 0;"><strong>Tech:</strong> {{ proj.technologies | join(', ') }}</p>
+            <p style="margin: 0;">{{ proj.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+
+</html>
